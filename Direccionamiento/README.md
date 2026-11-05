@@ -47,9 +47,4 @@ NAT1 (red WAN de GNS3) → Router R1 → Switch SW1 → Ubuntu Server (Zabbix) y
 - Los dos dispositivos se registraron en el grupo `Network devices` y su disponibilidad SNMP se verificó en verde.
 - No se publica la cadena de comunidad SNMP para evitar divulgar parámetros de acceso.
 
-## Observaciones
-
-- R1 realiza NAT overload para ofrecer salida desde `10.21.40.0/24` hacia la interfaz WAN.
-- El direccionamiento de este archivo corresponde **solo al laboratorio Zabbix-SNMP-DHCP**; no debe mezclarse con el direccionamiento de otras prácticas de GNS3.
-- Las IP y los estados proceden de las verificaciones realizadas durante la práctica, no de un inventario descubierto automáticamente.
 
