@@ -1,0 +1,101 @@
+PRACTICA DE MONITOREO DE RED CON ZABBIX EN GNS3
+COMANDOS DE CONFIGURACION DE UBUNTU SERVER
+==============================================
+
+Servidor: Ubuntu Server 24.04.5
+IP: 10.21.40.10/24 (reserva DHCP configurada en R1)
+Router R1: 10.21.40.1
+Switch SW1: 10.21.40.2
+Zabbix: 7.4
+Interfaz web: http://10.21.40.10/zabbix
+
+NOTA: Registro de referencia reconstruido a partir de la practica.
+Los comandos se agrupan por etapas; NO ejecutar todo el TXT de una vez.
+No se incluyen contrasenas reales ni procedimientos adicionales de
+ampliacion de disco, diagnostico o recuperacion de MySQL.
+
+1. CONFIGURACION DE RED DHCP EN UBUNTU
+-------------------------------------
+sudo nano /etc/netplan/50-cloud-init.yaml
+
+# Contenido configurado en Netplan:
+# network:
+#   version: 2
+#   ethernets:
+#     ens3:
+#       dhcp4: true
+#       dhcp-identifier: mac
+
+sudo netplan generate
+sudo netplan apply
+ip -4 addr show ens3
+ip route
+
+2. PRUEBAS DE CONECTIVIDAD
+-------------------------
+ping -c 4 10.21.40.1
+ping -c 4 8.8.8.8
+ping -c 4 google.com
+
+3. REPOSITORIO ZABBIX 7.4 PARA UBUNTU 24.04
+-------------------------------------------
+cd /tmp
+wget https://repo.zabbix.com/zabbix/7.4/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest+ubuntu24.04_all.deb
+sudo dpkg -i zabbix-release_latest+ubuntu24.04_all.deb
+sudo apt update
+
+4. INSTALACION DE MYSQL Y ZABBIX
+--------------------------------
+sudo apt install mysql-server -y
+sudo apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent -y
+
+5. BASE DE DATOS DE ZABBIX (SOLO INSTALACION INICIAL)
+----------------------------------------------------
+sudo mysql
+
+# Comandos ejecutados dentro de MySQL:
+# CREATE DATABASE zabbix CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+# CREATE USER 'zabbix'@'localhost' IDENTIFIED BY '<CONTRASENA_PRIVADA>';
+# GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost';
+# SET GLOBAL log_bin_trust_function_creators = 1;
+# EXIT;
+
+# Importar esquema solamente en una base de datos nueva y vacia:
+zcat /usr/share/zabbix/sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p zabbix
+sudo mysql -e "SET GLOBAL log_bin_trust_function_creators = 0;"
+
+6. CONFIGURACION DEL SERVIDOR ZABBIX
+------------------------------------
+sudo nano /etc/zabbix/zabbix_server.conf
+
+# Parametro configurado (sin publicar la contrasena):
+# DBPassword=<CONTRASENA_PRIVADA>
+
+sudo systemctl restart zabbix-server
+systemctl is-active zabbix-server zabbix-agent apache2 mysql
+
+# Finalizar asistente web en:
+# http://10.21.40.10/zabbix
+
+7. COMPROBACION SNMP DE R1 Y SW1
+--------------------------------
+# Instalar cliente SNMP si hace falta:
+sudo apt install snmp -y
+
+# La comunidad se sustituye por un marcador para publicacion segura.
+# Usar en el laboratorio la comunidad configurada en R1 y SW1:
+snmpwalk -v2c -c '<COMUNIDAD_SNMP>' 10.21.40.1 1.3.6.1.2.1.1
+snmpwalk -v2c -c '<COMUNIDAD_SNMP>' 10.21.40.2 1.3.6.1.2.1.1
+
+8. VERIFICACION FINAL
+---------------------
+ip -4 addr show ens3
+systemctl is-active zabbix-server zabbix-agent apache2 mysql
+
+# Configuracion completada en la interfaz web de Zabbix:
+# - Host R1: interfaz SNMP 10.21.40.1, puerto 161.
+# - Host SW1: interfaz SNMP 10.21.40.2, puerto 161.
+# - Plantilla en ambos: Cisco IOS by SNMP.
+# - Comprobar disponibilidad SNMP verde y graficas de trafico.
+
+FIN DEL REGISTRO DE CONFIGURACION SOLICITADA
