@@ -4,7 +4,7 @@ Laboratorio práctico de **monitoreo y seguridad de red** implementado en GNS3. 
 
 ## 🎬 Video demostrativo del laboratorio
 
-> **Enlace de YouTube (pendiente):** [PEGAR AQUÍ EL ENLACE DEL VIDEO](https://www.youtube.com/)
+> **Enlace de YouTube :** (https://www.youtube.com/watch?v=P63S0XVYHyw&t=2s)
 >
 > El video mostrará la fecha y hora, la topología en GNS3, las pruebas DHCP y SNMP, el monitoreo en Zabbix y una demostración con cámara y voz. Duración máxima: **10 minutos**.
 
