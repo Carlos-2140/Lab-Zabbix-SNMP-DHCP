@@ -2,7 +2,7 @@
 
 Laboratorio práctico de **monitoreo y seguridad de red** implementado en GNS3. Se configuró un router Cisco R1 para DHCP y NAT, un switch Cisco SW1 para la conectividad LAN, un servidor Ubuntu con Zabbix y un cliente Windows 10. Zabbix supervisa R1 y SW1 mediante SNMPv2c.
 
-## 🎬 Video demostrativo del laboratorio
+## Video demostrativo del laboratorio
 
 > **Enlace de YouTube :** (https://www.youtube.com/watch?v=P63S0XVYHyw&t=2s)
 
